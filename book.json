@@ -1,5 +1,5 @@
 {
-    "plugins": [  "anchor-navigation-ex", "edit-link", "copy-code-button", "theme-comscore", "ga" ],
+    "plugins": [  "anchor-navigation-ex", "edit-link", "copy-code-button", "theme-comscore", "ga" , "summary" ],
     "pluginsConfig": {
       "fontSettings": {
         "theme": "night",
@@ -30,7 +30,7 @@
           }
       },
       "edit-link": {
-        "base": "https://github.com/<你的 GitHub 帳號>/demo-build-and-publish-gitbook/edit/master/",
+        "base": "https://github.com/uu2fu3o/",
         "label": "Edit This Page"
       },
       "ga": {
