@@ -6,7 +6,7 @@
         - [Jwt](articles/渗透测试/brup labs/Jwt.md)
         - [Ssrf](articles/渗透测试/brup labs/Ssrf.md)
         - [Upload Files](articles/渗透测试/brup labs/upload files.md)
-    - [内网体系建设]()
+    - [内网体系建设](articles/渗透测试/内网体系建设/)
         - [Aigc X Project](articles/渗透测试/内网体系建设/Aigc-X-project.md)
         - [IPC连接与默认共享的盘符文件有什么区别](articles/渗透测试/内网体系建设/IPC连接与默认共享的盘符文件有什么区别.md)
         - [Potato家族提权](articles/渗透测试/内网体系建设/Potato家族提权.md)
