@@ -11,10 +11,10 @@ jobs:
     name: Build and deploy
     runs-on: ubuntu-latest
     env:
-      MY_SECRET   : ${{secrets.GH_ACCESS_TOKEN}}
+      MY_SECRET   : ${{secrets.token}}
       USER_NAME   : uu2fu3o
       USER_EMAIL  : uu2fu3o@gmail.com
-      BOOK_DIR    : book_sources
+      BOOK_DIR    : book_source
 
     steps:
     - name: Checkout 🛎️
