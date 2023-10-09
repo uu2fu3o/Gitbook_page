@@ -9,6 +9,7 @@
         * [Upload-Files](articles/渗透测试/bruplabs/upload-files.md)
     * [Kerberos专题](articles/渗透测试/Kerbros专题/)
         * [Kerberos认证基础与攻击手段](articles/渗透测试/Kerberos专题/Kerberos认证基础.md)
+        * [AS_REQ&AS_REP阶段攻击](articles/渗透测试/Kerberos专题/AS_REQ&AS_REP阶段攻击.md)
     * [内网体系建设](articles/渗透测试/内网体系建设/)
         * [Aigc X Project](articles/渗透测试/内网体系建设/Aigc-X-project.md)
         * [IPC连接与默认共享的盘符文件有什么区别](articles/渗透测试/内网体系建设/IPC连接与默认共享的盘符文件有什么区别.md)
