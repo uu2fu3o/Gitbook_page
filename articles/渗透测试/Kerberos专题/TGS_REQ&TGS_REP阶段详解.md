@@ -399,3 +399,11 @@ serviceB如下
   如图：
 
   ![step3](https://raw.githubusercontent.com/uu2fu3o/blog-picture/main/ass/step3.png)
+
+## 参考链接
+
+https://daiker.gitbook.io/windows-protocol/kerberos/2#3.-enc_part
+
+https://shu1l.github.io/2020/08/05/kerberos-yu-wei-pai-gong-ji-xue-xi/#%E9%9D%9E%E7%BA%A6%E6%9D%9F%E6%80%A7%E5%A7%94%E6%B4%BE
+
+https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-sfu/1fb9caca-449f-4183-8f7a-1a5fc7e7290a
