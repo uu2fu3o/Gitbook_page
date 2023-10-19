@@ -13,7 +13,7 @@
         * [TGS_REQ&TGS_REP&委派详解](articles/渗透测试/Kerberos专题/TGS_REQ&TGS_REP阶段详解.md)
         * [TGS_REQ&TGS_REP阶段攻击](articles/渗透测试/Kerberos专题/TGS_REQ&TGS_REP阶段攻击.md)
         * [Pass-the-ticket](articles/渗透测试/Kerberos专题/Pass-the-ticket.md)
-        * [委派攻击专题](委派攻击专题.md)
+        * [委派攻击专题](articles/渗透测试/Kerberos专题/委派攻击专题.md)
         * [PAC](articles/渗透测试/Kerberos专题/PAC.md)
     * [内网体系建设](articles/渗透测试/内网体系建设/)
         * [Aigc X Project](articles/渗透测试/内网体系建设/Aigc-X-project.md)
