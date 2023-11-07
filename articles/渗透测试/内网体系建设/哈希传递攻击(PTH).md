@@ -52,7 +52,7 @@ B向A发送一个8字节challenge,A会根据缓存的LM-Hash计算，并生成�
 
 为了解决LM加密和身份验证方案中固有的安全弱点，引入了NTLM协议。通常抓到的LM Hash为AAD3B435B51404EEAAD3B435B51404EE，都是没有价值的。
 
-#### NTML Hash的生成
+#### NTLM Hash的生成
 
 password : 123456 
 

@@ -97,7 +97,7 @@ DOM型与其他类型XSS的本质区别在于，DOM型XSS不需要经过服务�
 
 很多html标签支持javascript:[code]伪协议的形式，我们利用这个性质控制标签属性值进行XSS，例如：
 
-`<img src="javascript:alter('xss');"> `
+`<img src="javascript:alert('xss');"> `
 
 需要注意的是并不是所有浏览器都支持这类伪协议；
 
@@ -126,7 +126,7 @@ alter(/xss/)"width=100>
 
 由于html属性值支持ascii码的形式，我们可以将字符转换为ascii码进行执行，例如：
 
-`<img src="javascript&#58alter(/xss/);">` &#58是':'的ascii形式；
+`<img src="javascript&#58alert(/xss/);">` &#58是':'的ascii形式；
 
 我们甚至可以全部转码
 

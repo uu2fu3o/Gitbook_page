@@ -15,19 +15,21 @@
         * [Pass-the-ticket](articles/渗透测试/Kerberos专题/Pass-the-ticket.md)
         * [委派攻击专题](articles/渗透测试/Kerberos专题/委派攻击专题.md)
         * [PAC](articles/渗透测试/Kerberos专题/PAC.md)
+    * [NTLM专题](articles/渗透测试/NTLM专题/)
+        * [NTLM基础](articles/渗透测试/NTLM专题/NTLM基础.md)
+        * [发送NTLM请求](articles/渗透测试/NTLM专题/发送NTLM请求.md)
+        * [NET-NTLM -hash破解](articles\渗透测试\NTLM专题\NET-NTLM -hash破解.md)
+        * [NTLM-Relay](articles\渗透测试\NTLM专题\NTLM-Relay.md)
+        * [NTLM签名](articles\渗透测试\NTLM专题\NTLM签名.md)
+        * [相关漏洞](articles\渗透测试\NTLM专题\相关漏洞.md)
     * [内网体系建设](articles/渗透测试/内网体系建设/)
         * [Aigc X Project](articles/渗透测试/内网体系建设/Aigc-X-project.md)
         * [IPC连接与默认共享的盘符文件有什么区别](articles/渗透测试/内网体系建设/IPC连接与默认共享的盘符文件有什么区别.md)
         * [Potato家族提权](articles/渗透测试/内网体系建设/Potato家族提权.md)
-        * Potato家族提权
         * [Psexec过程分析与监测](articles/渗透测试/内网体系建设/Psexec过程分析与监测.md)
-        * Psexec
         * [Windows权限提升](articles/渗透测试/内网体系建设/windows权限提升.md)
-        * Windows权限提升
         * [内网信息收集](articles/渗透测试/内网体系建设/内网信息收集.md)
         * [内网权限持久化](articles/渗透测试/内网体系建设/内网权限持久化.md)
-        * 内网权限持久化
-        * 内网横向
         * [内网横向移动](articles/渗透测试/内网体系建设/内网横向移动.md)
         * [内网渗透基础知识](articles/渗透测试/内网体系建设/内网渗透基础知识.md)
         * [哈希传递攻击(PTH)](articles/渗透测试/内网体系建设/哈希传递攻击(PTH).md)
@@ -50,9 +52,7 @@
         * Cs
     * [技术原理与分析](articles/渗透测试/技术原理与分析/)
         * [IP Parsing](articles/渗透测试/技术原理与分析/IP_parsing.md)
-        * Reverse Shell Photo
         * [反弹Shell原理及分析](articles/渗透测试/技术原理与分析/反弹shell原理及分析.md)
-        * 反弹Shell原理及分析
         * [系统提权](articles/渗透测试/技术原理与分析/系统提权.md)
     * [漏洞复现](articles/渗透测试/漏洞复现/)
         * [Php](articles/渗透测试/漏洞复现/Php/)
@@ -110,3 +110,6 @@
         * [红日7](articles/渗透测试/靶机练习/红日7.md)
         * 红日7
 
++ 小技能
+  + 取证
+    + [取证基础](articles\小技能\取证\取证基础.md)
