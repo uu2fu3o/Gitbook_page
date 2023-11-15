@@ -18,7 +18,7 @@
     * [NTLM专题](articles/渗透测试/NTLM专题/)
         * [NTLM基础](articles/渗透测试/NTLM专题/NTLM基础.md)
         * [发送NTLM请求](articles/渗透测试/NTLM专题/发送NTLM请求.md)
-        * [NET-NTLM -hash破解](articles\渗透测试\NTLM专题\NET-NTLM -hash破解.md)
+        * [NET-NTLM -hash破解](articles\渗透测试\NTLM专题\NET-NTLM-hash破解.md)
         * [NTLM-Relay](articles\渗透测试\NTLM专题\NTLM-Relay.md)
         * [NTLM签名](articles\渗透测试\NTLM专题\NTLM签名.md)
         * [相关漏洞](articles\渗透测试\NTLM专题\相关漏洞.md)
