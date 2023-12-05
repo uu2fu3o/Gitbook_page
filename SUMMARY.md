@@ -29,7 +29,7 @@
         * [组策略](articles/渗透测试/LDAP专题/组策略.md)
         * [组策略的一些利用](articles/渗透测试/LDAP专题/组策略的一些利用.md)
         * [域权限](articles/渗透测试/LDAP专题/域权限.md)
-        * [特权与危险ACL](articles/渗透测试/LDAP专题/特权与危险ACL,md)
+        * [特权与危险ACL](articles/渗透测试/LDAP专题/特权与危险ACL.md)
     * [内网体系建设](articles/渗透测试/内网体系建设/)
         * [Aigc X Project](articles/渗透测试/内网体系建设/Aigc-X-project.md)
         * [IPC连接与默认共享的盘符文件有什么区别](articles/渗透测试/内网体系建设/IPC连接与默认共享的盘符文件有什么区别.md)
