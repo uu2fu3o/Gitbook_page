@@ -22,6 +22,14 @@
         * [NTLM-Relay](articles\渗透测试\NTLM专题\NTLM-Relay.md)
         * [NTLM签名](articles\渗透测试\NTLM专题\NTLM签名.md)
         * [相关漏洞](articles\渗透测试\NTLM专题\相关漏洞.md)
+    * [LDAP专题](articles/渗透测试/LDAP专题/)
+        * [Active-Directory简介](articles/渗透测试/LDAP专题/Active-Directory简介.md)
+        * [域用户和计算机用户](articles/渗透测试/LDAP专题/域用户和计算机用户,md)
+        * [组和OU介绍](articles/渗透测试/LDAP专题/组和OU介绍.md)
+        * [组策略](articles/渗透测试/LDAP专题/组策略.md)
+        * [组策略的一些利用](articles/渗透测试/LDAP专题/组策略的一些利用.md)
+        * [域权限](articles/渗透测试/LDAP专题/域权限.md)
+        * [特权与危险ACL](articles/渗透测试/LDAP专题/特权与危险ACL,md)
     * [内网体系建设](articles/渗透测试/内网体系建设/)
         * [Aigc X Project](articles/渗透测试/内网体系建设/Aigc-X-project.md)
         * [IPC连接与默认共享的盘符文件有什么区别](articles/渗透测试/内网体系建设/IPC连接与默认共享的盘符文件有什么区别.md)
@@ -49,7 +57,6 @@
         * [浏览器安全](articles/渗透测试/外网漏洞/浏览器安全.md)
     * [工具使用](articles/渗透测试/工具使用/)
         * [CS使用](articles/渗透测试/工具使用/CS使用.md)
-        * Cs
     * [技术原理与分析](articles/渗透测试/技术原理与分析/)
         * [IP Parsing](articles/渗透测试/技术原理与分析/IP_parsing.md)
         * [反弹Shell原理及分析](articles/渗透测试/技术原理与分析/反弹shell原理及分析.md)
@@ -81,34 +88,20 @@
             * [脏牛提权复现](articles/渗透测试/漏洞复现/提权/脏牛提权复现.md)
     * [靶机练习](articles/渗透测试/靶机练习/)
         * [DC1](articles/渗透测试/靶机练习/DC1.md)
-        * DC1图库
         * [DC2](articles/渗透测试/靶机练习/DC2.md)
-        * DC2图库
         * [DC3](articles/渗透测试/靶机练习/DC3.md)
-        * DC3图库
         * [DC4](articles/渗透测试/靶机练习/DC4.md)
-        * DC4图库
         * [DC5](articles/渗透测试/靶机练习/DC5.md)
-        * DC5图库
         * [DC6](articles/渗透测试/靶机练习/DC6.md)
-        * DC6图库
         * [DC7](articles/渗透测试/靶机练习/DC7.md)
-        * DC7图库
         * [DC8](articles/渗透测试/靶机练习/DC8.md)
-        * DC8图库
         * [DC9](articles/渗透测试/靶机练习/DC9.md)
-        * DC9图库
         * [Raven2](articles/渗透测试/靶机练习/Raven2.md)
         * [红日1](articles/渗透测试/靶机练习/红日1.md)
-        * 红日1
         * [红日2](articles/渗透测试/靶机练习/红日2.md)
-        * 红日2
         * [红日3](articles/渗透测试/靶机练习/红日3.md)
-        * 红日3
         * [红日5](articles/渗透测试/靶机练习/红日5.md)
-        * 红日5
         * [红日7](articles/渗透测试/靶机练习/红日7.md)
-        * 红日7
 
 + 小技能
   + 取证

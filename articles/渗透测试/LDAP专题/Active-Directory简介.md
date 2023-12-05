@@ -236,4 +236,98 @@ win server开始，微软允许用户自定义分区来扩展Naming Context的�
 
   ![AD15](https://raw.githubusercontent.com/uu2fu3o/blog-picture/main/ldapp/AD15.png)
 
-+ 
++ 最后一点也是最核心的，我们来讲下他的实例是怎么获取到基本属性的。
+
+  + 这个类没有属性`systemMustContain`和`MustContain`，这两个属性定义了强制属性
+
+  + 该类包含systemMayContain`和`MayContain，为可选属性
+
+    ![AD16](https://raw.githubusercontent.com/uu2fu3o/blog-picture/main/ldapp/AD16.png)
+
+    ![AD17](https://raw.githubusercontent.com/uu2fu3o/blog-picture/main/ldapp/AD17.png)
+
+    上面四个属性里面的属性集合是这个类独有的属性集合，由于类是可继承的。因此，一个类的属性集合里面出了前面四个属性的值，还有可能来自父类和辅助类。
+
+    + 辅助类可通过systemAuxiliaryClass查看，显然Computer没有辅助类
+
+    + 通过subClass查看父类，父类为user,通过查看user的辅助类和父类，如此递归直到top
+
+      ![AD18](https://raw.githubusercontent.com/uu2fu3o/blog-picture/main/ldapp/AD18.png)
+
+      ![AD19](https://raw.githubusercontent.com/uu2fu3o/blog-picture/main/ldapp/AD19.png)
+
+      用Active DirectorySchema 查看，能看到属性的类型是可选或强制，以及是从哪个源类继承来的
+
+### Schema NC中的属性
+
+每个属性都是一个条目，是类`attributeSchema`的实例
+
+在域内的所有属性必须在这里定义，而这里的条目，最主要的是限定了属性的语法定义。其实就是数据类型，比如 Boolean类型，Integer类型等。
+
+以条目CN=System-Flags,CN=Schema,CN=Configuration,DC=hack,DC=com为例
+
+他的`attributeSyntax`是2.5.5.9
+
+![AD20](https://raw.githubusercontent.com/uu2fu3o/blog-picture/main/ldapp/AD20.png)
+
+属性System-Flags是类attributeSchema的实例
+
+![AD21](https://raw.githubusercontent.com/uu2fu3o/blog-picture/main/ldapp/AD21.png)
+
+![attributeSyntax](https://raw.githubusercontent.com/uu2fu3o/blog-picture/main/ldapp/attributeSyntax.png)
+
+## 搜索Active Directory
+
+基础的操作，查询目录搜索要求的数据。查询目录需要指定两个元素。
+
++ BaseDN
+
++ 过滤规则
+
+简单介绍语法问题
+
+### Base DN
+
+![AD22](https://raw.githubusercontent.com/uu2fu3o/blog-picture/main/ldapp/AD22.png)
+
+Base DN指定了树的根，例如这里的"DC= hack,DC=com"就是以DC=hack,DC=com为根向下搜索
+
+### 过滤规则
+
+LDAP 搜索过滤器语法有以下子集：
+
+- 用与号 (&) 表示的 AND 运算符。
+- 用竖线 (|) 表示的 OR 运算符。
+- 用感叹号 (!) 表示的 NOT 运算符。
+- 用名称和值表达式的等号 (=) 表示的相等比较。
+- 用名称和值表达式中值的开头或结尾处的星号 (*) 表示的通配符。
+
+下面举几个例子
+
+- (uid=testuser)
+
+  匹配 uid 属性为testuser的所有对象
+
+- (uid=test*)
+
+  匹配 uid 属性以test开头的所有对象
+
+- (!(uid=test*))
+
+  匹配 uid 属性不以test开头的所有对象
+
+- (&(department=1234)(city=Paris))
+
+  匹配 department 属性为1234且city属性为Paris的所有对象
+
+- (|(department=1234)(department=56*))
+
+  匹配 department 属性的值刚好为1234或者以56开头的所有对象。
+
+一个需要注意的点就是运算符是放在前面的，跟我们之前常规思维的放在中间不一样
+
+## 参考链接
+
+[Windows Protocol](https://daiker.gitbook.io/windows-protocol/ldap-pian/8#0x06-sou-suo-active-directory)
+
+https://learn.microsoft.com/en-us/windows/win32/ad/active-directory-domain-services
