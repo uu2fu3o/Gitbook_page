@@ -22,6 +22,9 @@
         * [NTLM-Relay](articles\渗透测试\NTLM专题\NTLM-Relay.md)
         * [NTLM签名](articles\渗透测试\NTLM专题\NTLM签名.md)
         * [相关漏洞](articles\渗透测试\NTLM专题\相关漏洞.md)
+    * [Exchange专题](articles/渗透测试/Exchange专题/)
+        * [exchange快速了解](articles/渗透测试/Exchange专题/exchange快速了解.md)
+        * [exchange攻击手法](articles/渗透测试/Exchange专题/exchange攻击手法.md)
     * [LDAP专题](articles/渗透测试/LDAP专题/)
         * [Active-Directory简介](articles/渗透测试/LDAP专题/Active-Directory简介.md)
         * [域用户和计算机用户](articles/渗透测试/LDAP专题/域用户和计算机用户,md)
@@ -84,7 +87,6 @@
             * [CVE 2016 4437](articles/渗透测试/漏洞复现/shiro/CVE-2016-4437.md)
             * [CVE 2020 1957](articles/渗透测试/漏洞复现/shiro/CVE-2020-1957.md)
         * [提权](articles/渗透测试/漏洞复现/提权/)
-            * 脏牛
             * [脏牛提权复现](articles/渗透测试/漏洞复现/提权/脏牛提权复现.md)
     * [靶机练习](articles/渗透测试/靶机练习/)
         * [DC1](articles/渗透测试/靶机练习/DC1.md)
