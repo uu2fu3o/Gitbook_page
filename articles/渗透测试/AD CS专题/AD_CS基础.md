@@ -356,3 +356,41 @@ pfx,pem,p12 包含公私钥，最关键的
   通过`certmgr.msc`申请，适用于在域内的情况
 
   ![image-20231227214904279](https://raw.githubusercontent.com/uu2fu3o/blog-picture/main/ldapp/image-20231227214904279.png)
+
+## 通过证书窃取用户凭据
+
+### 请求kerberos证书
+
+我们来回顾一下传统的kerberos申请TGT的过程，用户hash加密时间戳作为value,type为PA-ENC-TIMESTAMP， 放在PA_DATA上。KDC收到并解密，对比时间在合理范围内就返回TGT
+
+这个过程可以使用证书进行认证，在RFC4556中有这样一段话。
+
+![image-20231228141250441](https://raw.githubusercontent.com/uu2fu3o/blog-picture/main/ldapp/image-20231228141250441.png)
+
+引入了kerberos预身份验证的公钥加密支持。RFC4556又叫Public Key Cryptography for Initial Authentication in Kerberos (PKINIT)
+
+使用证书进行kerberos的身份认证，不再使用用户密码派生hash密钥，转而使用证书私钥进行签名
+
+为administrator导出一个包含私钥的证书，使用该证书去申请kerberos身份验证
+
+```
+Rubeus.exe asktgt /user:Administrator /certificate:administrator.pfx /domain:loser.com /dc:ECHANGE2013.loser.com
+```
+
+![image-20231228144631564](https://raw.githubusercontent.com/uu2fu3o/blog-picture/main/ldapp/image-20231228144631564.png)
+
+### 请求NTLM凭据
+
+在微软官方文档中有这样一句话
+
+![image-20231228150749067](https://raw.githubusercontent.com/uu2fu3o/blog-picture/main/ldapp/image-20231228150749067.png)
+
+为了支持ntlm身份验证，在PAC中会单向返回用户的ntlm hash
+
+因此获取ntlm凭据也是能够实现的,这一点benjamin在17年就进行了武器化
+
+使用kekeo可以获取到证书对应用户的ntlm凭据，需要包含私钥
+
+![image-20231228152545277](https://raw.githubusercontent.com/uu2fu3o/blog-picture/main/ldapp/image-20231228152545277.png)
+
+如果用户更改了密码，我们仍然能够持续的获取该用户的ntlm hash，如果我们有对应证书的话，毕竟证书和kerberos在设计上是分开的。
