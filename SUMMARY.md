@@ -111,6 +111,18 @@
     + [Docker的使用](articles/云原生/Docker/Docker使用.md)
     + [Docker网络](articles/云原生/Docker/Docker网络.md)
     + [Docker的底层实现](articles/云原生/Docker/Docker的底层实现.md)
+  + [k8s](articles/云原生/K8S/)
+    + [认识k8s](articles/云原生/K8S/认识K8s.md)
+    + [K8s入门](articles/云原生/K8S/K8s入门.md)
+    + [K8s进阶](articles/云原生/K8S/K8s进阶.md)
+    + [kubectl备忘录](articles/云原生/K8S/kubectl备忘录.md)
 + 小技能
   + [取证](articles/小技能/取证/)
     + [取证基础](articles小技能/取证/取证基础.md)
+
++ 工具开发
+
+  + [模型训练](articles/工具开发/模型训练/)
+    + [SpaCy](articles/工具开发/模型训练/SpaCy.md)
+
+  + [k8s恶意行为检测](articles/工具开发/k8s恶意行为检测.md)
