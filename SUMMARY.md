@@ -116,10 +116,22 @@
     + [K8s入门](articles/云原生/K8S/K8s入门.md)
     + [K8s进阶](articles/云原生/K8S/K8s进阶.md)
     + [kubectl备忘录](articles/云原生/K8S/kubectl备忘录.md)
+    + [k8s漏洞](articles/云原生/K8S/k8s漏洞.md)
++ Java学习
+  + [Java基础](articles/Java学习/Java基础/)
+    + [ClassLoader](articles/Java学习/Java基础/ClassLoader.md)
+    + [反射](articles/Java学习/Java基础/反射.md)
+    + [动态代理](articles/Java学习/Java基础/动态代理.md)
+    + [类序列化](articles/Java学习/Java基础/类序列化.md)
+    + [Java文件系统](articles/Java学习/Java基础/Java文件系统.md)
+    + [JDBC](articles/Java学习/Java基础/JDBC.md)
+    + [本地命令执行](articles/Java学习/Java基础/本地命令执行.md)
+  + [CC链](articles/Java学习/CC链/)
+    + [Transformer](articles/Java学习/CC链/Transformer.md)
+    + [CC1](articles/Java学习/CC链/CC1.md)
 + 小技能
   + [取证](articles/小技能/取证/)
     + [取证基础](articles小技能/取证/取证基础.md)
-
 + 工具开发
 
   + [模型训练](articles/工具开发/模型训练/)

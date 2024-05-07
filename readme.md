@@ -8,7 +8,7 @@
 
 vx:X1027578439
 
-Github-Organizations:D0g3-8Bit 这里面有师傅们做的武器化和各种工具，目前正在起步中
+Github-Organizations:D0g3-8Bit 这里面有师傅们做的武器化和各种工具，目前正在起步中，有看到喜欢的可以点点star
 
 
 
