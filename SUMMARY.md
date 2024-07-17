@@ -117,6 +117,7 @@
     + [K8s进阶](articles/云原生/K8S/K8s进阶.md)
     + [kubectl备忘录](articles/云原生/K8S/kubectl备忘录.md)
     + [k8s漏洞](articles/云原生/K8S/k8s漏洞.md)
+  
 + Java学习
   + [Java基础](articles/Java学习/Java基础/)
     + [ClassLoader](articles/Java学习/Java基础/ClassLoader.md)
@@ -126,12 +127,36 @@
     + [Java文件系统](articles/Java学习/Java基础/Java文件系统.md)
     + [JDBC](articles/Java学习/Java基础/JDBC.md)
     + [本地命令执行](articles/Java学习/Java基础/本地命令执行.md)
+    + [JNDI](articles/Java学习/Java基础/JNDI.md)
+    + [RMI](articles/Java学习/Java基础/RMI.md)
+  + [内存马](articles/Java学习/内存马/)
+    + [Tomcat](articles/Java学习/内存马/Tomcat/)
+      + [Tomcat架构](articles/Java学习/内存马/Tomcat/Tomcat架构.md)
+      + [Servlet](articles/Java学习/内存马/Tomcat/Servlet.md)
+      + [Filter](articles/Java学习/内存马/Tomcat/Filter.md)
+      + [Listener](articles/Java学习/内存马/Tomcat/Listener.md)
+      + [Valve](articles/Java学习/内存马/Tomcat/Valve.md)
+      + [Executor](articles/Java学习/内存马/Tomcat/Executor.md)
+      + [Upgrade](articles/Java学习/内存马/Tomcat/Upgrade.md)
+      + [Adapter](articles/Java学习/内存马/Tomcat/Adapter.md)
+      + [反序列化注入内存马](articles/Java学习/内存马/Tomcat/反序列化注入内存马.md)
   + [CC链](articles/Java学习/CC链/)
     + [Transformer](articles/Java学习/CC链/Transformer.md)
     + [CC1](articles/Java学习/CC链/CC1.md)
+    + [CC2](articles/Java学习/CC链/CC2.md)
+    + [CC3](articles/Java学习/CC链/CC3.md)
+    + [CC4](articles/Java学习/CC链/CC4.md)
+    + [CC5](articles/Java学习/CC链/CC5.md)
+    + [CC6](articles/Java学习/CC链/CC6.md)
+    + [CC7](articles/Java学习/CC链/CC7.md)
+  
+  
+  
 + 小技能
+
   + [取证](articles/小技能/取证/)
     + [取证基础](articles小技能/取证/取证基础.md)
+
 + 工具开发
 
   + [模型训练](articles/工具开发/模型训练/)
