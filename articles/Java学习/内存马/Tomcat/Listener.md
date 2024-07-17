@@ -66,15 +66,13 @@ public class ShellListener implements ServletRequestListener {
 
 跟进到**getApplicationEvenListeners()方法**
 
-![image-20240703210724043](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240703210724043.png)
+![image-20240717170944701](https://raw.githubusercontent.com/uu2fu3o/blog-picture/master/cloud/image-20240717170944701.png)
 
 listener对象存储在该字段当中
 
 通过StandardContext#addApplicationEventListener()来进行listener的添加
 
-![image-20240703211707691](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20240703211707691.png)
-
-
+![image-20240717171006216](https://raw.githubusercontent.com/uu2fu3o/blog-picture/master/cloud/image-20240717171006216.png)
 
 ### POC编写
 
